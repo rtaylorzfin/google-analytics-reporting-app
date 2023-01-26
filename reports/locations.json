@@ -1,23 +1,23 @@
 {
   "applicationName": "Hello Analytics Reporting",
-  "keyFileLocation": "analytics-export-375819-b2f9d6c4a317.json",
   "viewId": "4490530",
   "reportName": "locations",
   "metrics": [
     "ga:users",
     "ga:sessions",
     "ga:bounces",
-    "ga:avgSessionDuration"
+    "ga:sessionDuration"
   ],
   "dimensions": [
-    "ga:country",
-    "ga:region",
-    "ga:city",
-    "ga:date"
+    "ga:date",
+    "ga:countryIsoCode",
+    "ga:regionIsoCode"
   ],
   "startDate": "2007-08-01",
   "endDate": "today",
-  "limit": 10000,
+  "limit": 100000,
   "nextPageToken": null,
-  "sort": [ "ga:date" ]
+  "sort": [
+    "ga:date"
+  ]
 }

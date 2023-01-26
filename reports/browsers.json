@@ -1,6 +1,5 @@
 {
   "applicationName": "Hello Analytics Reporting",
-  "keyFileLocation": "analytics-export-375819-b2f9d6c4a317.json",
   "viewId": "4490530",
   "reportName": "browsers",
   "metrics": [
@@ -10,12 +9,12 @@
     "ga:sessionDuration"
   ],
   "dimensions": [
-    "ga:browser",
-    "ga:date"
+    "ga:date",
+    "ga:browser"
   ],
   "startDate": "2007-08-01",
   "endDate": "today",
-  "limit": 10000,
+  "limit": 100000,
   "sort": [
     "ga:date"
   ]

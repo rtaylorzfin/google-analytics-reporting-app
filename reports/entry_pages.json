@@ -1,23 +1,22 @@
 {
   "applicationName": "Hello Analytics Reporting",
   "viewId": "4490530",
-  "reportName": "pages",
-  "dimensions": [
-    "ga:date",
-    "ga:hostname",
-    "ga:pagePath"
-  ],
+  "reportName": "entry_pages",
   "metrics": [
     "ga:users",
-    "ga:pageviews",
-    "ga:exits",
-    "ga:timeOnPage"
+    "ga:entrances",
+    "ga:sessionDuration",
+    "ga:bounces"
+  ],
+  "dimensions": [
+    "ga:date",
+    "ga:landingPagePath"
   ],
   "startDate": "2007-08-01",
   "endDate": "today",
   "limit": 100000,
+  "nextPageToken": null,
   "sort": [
     "ga:date"
-  ],
-  "nextPageToken": null
+  ]
 }
