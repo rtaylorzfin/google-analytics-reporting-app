@@ -14,6 +14,8 @@ Example usage:
 First you have to set up your Google Analytics credentials.  You can do this by following the 
 instructions here: https://developers.google.com/analytics/devguides/reporting/core/v4/quickstart/service-java
 
+(The above mentioned link is the basis of this app.)
+
 Make sure you save the credentials file as `credentials.json` in the root of this project.
 
 Once you have your credentials set up, you can run the app with the following command:
@@ -21,6 +23,9 @@ Once you have your credentials set up, you can run the app with the following co
 ```
 mvn compile exec:java -Dexec.args="./reports/some-report-config.json"
 ```
+
+The first time you run this app, you may get an error saying that this is the first time using the api and you have to follow
+a link from the error to enable it.
 
 Report Configurations:
 ---

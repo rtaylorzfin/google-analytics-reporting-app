@@ -46,10 +46,6 @@ public class AnalyticsReportingApp {
         }
 
         System.out.println("Starting Analytics Reporting App");
-        System.out.println("Dying");
-        System.exit(0);
-
-
         AnalyticsReportingApp analyticsReportingApp = new AnalyticsReportingApp(args[0]);
         analyticsReportingApp.run();
     }
@@ -226,13 +222,19 @@ public class AnalyticsReportingApp {
         try {
             int fileSuffix = 0;
             for (Report report: response.getReports()) {
-                String filename = config.reportName + "-" + fileSuffix + ".csv";
+                String directoryName = new File(this.configFilename).getParent();
+                if (new File(directoryName + "/csv").exists()) {
+                    directoryName = directoryName + "/csv";
+                }
+
+                String filename = directoryName + "/" + config.reportName + "-" + fileSuffix + ".csv";
                 //while file exists, increment suffix
                 while(new File(filename).exists()) {
                     fileSuffix++;
-                    filename = config.reportName + "-" + fileSuffix + ".csv";
+                    filename = directoryName + "/" + config.reportName + "-" + fileSuffix + ".csv";
                 }
 
+                System.out.println("Writing report to " + filename);
 
                 ColumnHeader header = report.getColumnHeader();
                 List<String> dimensionHeaders = header.getDimensions();
