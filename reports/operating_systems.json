@@ -1,0 +1,22 @@
+{
+  "applicationName": "Hello Analytics Reporting",
+  "keyFileLocation": "analytics-export-375819-b2f9d6c4a317.json",
+  "viewId": "4490530",
+  "reportName": "operating_systems",
+  "dimensions": [
+    "ga:date",
+    "ga:operatingSystem"
+  ],
+  "metrics": [
+    "ga:users",
+    "ga:sessions",
+    "ga:bounces",
+    "ga:sessionDuration"
+  ],
+  "startDate": "2007-08-01",
+  "endDate": "today",
+  "limit": 10000,
+  "sort": [
+    "ga:date"
+  ]
+}

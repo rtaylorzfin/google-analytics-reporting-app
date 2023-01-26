@@ -1,0 +1,24 @@
+{
+  "applicationName": "Hello Analytics Reporting",
+  "keyFileLocation": "analytics-export-375819-b2f9d6c4a317.json",
+  "viewId": "4490530",
+  "reportName": "pages-part2-",
+  "dimensions": [
+    "ga:date",
+    "ga:hostname",
+    "ga:pagePath"
+  ],
+  "metrics": [
+    "ga:users",
+    "ga:pageviews",
+    "ga:exits",
+    "ga:timeOnPage"
+  ],
+  "startDate": "2016-06-11",
+  "endDate": "today",
+  "limit": 100000,
+  "sort": [
+    "ga:date"
+  ],
+  "nextPageToken": null
+}
