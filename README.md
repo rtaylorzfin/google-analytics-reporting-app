@@ -35,7 +35,6 @@ Example:
 ```
 {
   "applicationName": "Hello Analytics Reporting",
-  "keyFileLocation": "credentials.json",
   "viewId": "4490530",
   "reportName": "visitors",
   "metrics": [

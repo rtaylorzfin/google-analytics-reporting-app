@@ -1,0 +1,23 @@
+{
+  "applicationName": "Hello Analytics Reporting",
+  "viewId": "4490530",
+  "reportName": "visitors_details",
+  "metrics": [
+    "ga:users",
+    "ga:newUsers",
+    "ga:bounceRate",
+    "ga:pageviews",
+    "ga:bounces",
+    "ga:sessions",
+    "ga:sessionDuration"
+  ],
+  "dimensions": [
+    "ga:date"
+  ],
+  "startDate": "2007-08-01",
+  "endDate": "today",
+  "limit": 100000,
+  "sort": [
+    "ga:date"
+  ]
+}
