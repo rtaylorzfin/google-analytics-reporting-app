@@ -13,7 +13,7 @@
     "ga:exits",
     "ga:timeOnPage"
   ],
-  "startDate": "2022-10-29",
+  "startDate": "2023-01-01",
   "endDate": "today",
   "limit": 100000,
   "sort": [
