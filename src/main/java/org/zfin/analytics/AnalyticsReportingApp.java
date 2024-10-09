@@ -1,5 +1,6 @@
 package org.zfin.analytics;
 
+import com.google.analytics.data.v1beta.*;
 import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.http.HttpRequest;
@@ -8,19 +9,21 @@ import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.gson.GsonFactory;
 
 import java.io.*;
+import java.lang.reflect.Field;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 import com.google.api.services.analyticsreporting.v4.AnalyticsReportingScopes;
 import com.google.api.services.analyticsreporting.v4.AnalyticsReporting;
 
-import com.google.api.services.analyticsreporting.v4.model.*;
+//import com.google.api.services.analyticsreporting.v4.model.*;
+
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
 
@@ -53,36 +56,9 @@ public class AnalyticsReportingApp {
     public void run() {
         try {
             loadConfigJson();
-            AnalyticsReporting service = initializeAnalyticsReporting();
-
-            System.out.println("Getting report for " + config.reportName);
-            GetReportsResponse response = getReport(service);
-            writeResponseToCsvFile(response);
-
-            pullNextPage(service, response);
-
+            runReportAndWriteCsvFiles();
         } catch (Exception e) {
             e.printStackTrace();
-        }
-
-    }
-
-    private void pullNextPage(AnalyticsReporting service, GetReportsResponse response) throws IOException {
-        if (response.getReports().get(0).getNextPageToken() != null) {
-            //sleep for 15 seconds to avoid rate limit
-            try {
-                System.out.println("Sleeping for 15 seconds to avoid rate limit");
-                Thread.sleep(15000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-
-            config.nextPageToken = response.getReports().get(0).getNextPageToken();
-
-            System.out.println("Getting next page for " + config.reportName + " with token " + config.nextPageToken);
-            GetReportsResponse nextPageResponse = getReport(service);
-            writeResponseToCsvFile(nextPageResponse);
-            pullNextPage(service, nextPageResponse);
         }
     }
 
@@ -104,6 +80,7 @@ public class AnalyticsReportingApp {
         return new AnalyticsReporting.Builder(httpTransport, JSON_FACTORY, setHttpTimeout(credential))
                 .setApplicationName(config.applicationName).build();
     }
+
     private static HttpRequestInitializer setHttpTimeout(final HttpRequestInitializer requestInitializer) {
         return new HttpRequestInitializer() {
             @Override
@@ -116,170 +93,105 @@ public class AnalyticsReportingApp {
 
     /**
      * Queries the Analytics Reporting API V4.
-     *
-     * @param service An authorized Analytics Reporting API V4 service object.
-     * @return GetReportResponse The Analytics Reporting API V4 response.
-     * @throws IOException
      */
-    private GetReportsResponse getReport(AnalyticsReporting service) throws IOException {
-        // Create the DateRange object.
-        DateRange dateRange = new DateRange();
-        dateRange.setStartDate(config.startDate);
-        dateRange.setEndDate(config.endDate);
+    private void runReportAndWriteCsvFiles() {
+        RunReportRequest.Builder runReportRequestBuilder = RunReportRequest.newBuilder();
+        System.out.println("Getting report for " + config.reportName);
+        System.out.println("Property ID: " + config.propertyId);
+        runReportRequestBuilder.setProperty("properties/" + config.propertyId);
 
-        // Create the Metrics object.
-        List<Metric> metrics = new ArrayList<>();
+        // DateRange
+        runReportRequestBuilder.addDateRanges(DateRange.newBuilder().setStartDate(config.startDate).setEndDate(config.endDate));
+
+        // Configure Metrics
         config.metrics.forEach(metricName -> {
-            Metric metric = new Metric();
-            metric.setExpression(metricName);
-            metric.setAlias(metricName.replace("ga:", ""));
-            metrics.add(metric);
+            runReportRequestBuilder.addMetrics(Metric.newBuilder().setName(metricName));
         });
 
-        // Create the Dimension object.
-        List<Dimension> dimensions = new ArrayList<>();
+        // Configure Dimensions
         config.dimensions.forEach(dimensionName -> {
-            Dimension dimension = new Dimension();
-            dimension.setName(dimensionName);
-            dimensions.add(dimension);
+            runReportRequestBuilder.addDimensions(Dimension.newBuilder().setName(dimensionName));
         });
 
-        // Create the OrderBy object.
-        List<OrderBy> orderBys = new ArrayList<>();
+        // Configure the sort order
         config.sort.forEach(orderFieldName -> {
-            OrderBy orderBy = new OrderBy();
-            orderBy.setFieldName(orderFieldName);
-            orderBys.add(orderBy);
+//            runReportRequestBuilder.addOrderBys(OrderBy.newBuilder().setMetric(OrderBy.MetricOrderBy.newBuilder().setMetricName(orderFieldName)).build());
+            runReportRequestBuilder.addOrderBys(OrderBy.newBuilder().setDimension(OrderBy.DimensionOrderBy.newBuilder().setDimensionName(orderFieldName)).build());
         });
 
+        runReportRequestBuilder.setLimit(config.limit);
 
-        // Create the ReportRequest object.
-        ReportRequest request = new ReportRequest()
-                .setViewId(config.viewId)
-                .setDateRanges(Arrays.asList(dateRange))
-                .setMetrics(metrics)
-                .setDimensions(dimensions)
-                .setPageSize(config.limit)
-                .setOrderBys(orderBys);
+        RunReportRequest request = runReportRequestBuilder.build();
 
-        if (config.nextPageToken != null) {
-            request.setPageToken(config.nextPageToken);
-        }
+        try(BetaAnalyticsDataClient service = BetaAnalyticsDataClient.create()) {
+            RunReportResponse response = service.runReport(request);
 
-        ArrayList<ReportRequest> requests = new ArrayList<ReportRequest>();
-        requests.add(request);
+            int totalRows = response.getRowCount();
+            int rowsInResponse = response.getRowsCount();
 
-        // Create the GetReportsRequest object.
-        GetReportsRequest getReport = new GetReportsRequest()
-                .setReportRequests(requests);
+            System.out.println("Total rows: " + totalRows);
+            System.out.println("Rows in response: " + rowsInResponse);
 
-        // Call the batchGet method.
-        GetReportsResponse response = service.reports().batchGet(getReport).execute();
-
-        // Return the response.
-        return response;
-    }
-
-    /**
-     * Parses and prints the Analytics Reporting API V4 response.
-     *
-     * @param response An Analytics Reporting API V4 response.
-     */
-    private void printResponse(GetReportsResponse response) {
-
-        for (Report report: response.getReports()) {
-            ColumnHeader header = report.getColumnHeader();
-            List<String> dimensionHeaders = header.getDimensions();
-            List<MetricHeaderEntry> metricHeaders = header.getMetricHeader().getMetricHeaderEntries();
-            List<ReportRow> rows = report.getData().getRows();
-
-            if (rows == null) {
-                System.out.println("No data found for " + config.viewId);
-                return;
+            int pageCount = 0;
+            while (rowsInResponse < totalRows) {
+                request = runReportRequestBuilder.setOffset(rowsInResponse).build();
+                response = service.runReport(request);
+                rowsInResponse += response.getRowsCount();
+                pageCount++;
+                System.out.println("Getting page " + pageCount + " for " + config.reportName);
+                writeResponseToCsvFile(response.getRowsList());
             }
-
-            for (ReportRow row: rows) {
-                List<String> dimensions = row.getDimensions();
-                List<DateRangeValues> metrics = row.getMetrics();
-
-                for (int i = 0; i < dimensionHeaders.size() && i < dimensions.size(); i++) {
-                    System.out.println(dimensionHeaders.get(i) + ": " + dimensions.get(i));
-                }
-
-                for (int j = 0; j < metrics.size(); j++) {
-                    System.out.print("Date Range (" + j + "): ");
-                    DateRangeValues values = metrics.get(j);
-                    for (int k = 0; k < values.getValues().size() && k < metricHeaders.size(); k++) {
-                        System.out.println(metricHeaders.get(k).getName() + ": " + values.getValues().get(k));
-                    }
-                }
-            }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
-    private void writeResponseToCsvFile(GetReportsResponse response) {
+    private void writeResponseToCsvFile(List<Row> response) {
         //write analytics reports to csv files
         try {
             int fileSuffix = 0;
-            for (Report report: response.getReports()) {
-                String directoryName = new File(this.configFilename).getParent();
-                if (new File(directoryName + "/csv").exists()) {
-                    directoryName = directoryName + "/csv";
-                }
-
-                String filename = directoryName + "/" + config.reportName + "-" + fileSuffix + ".csv";
-                //while file exists, increment suffix
-                while(new File(filename).exists()) {
-                    fileSuffix++;
-                    filename = directoryName + "/" + config.reportName + "-" + fileSuffix + ".csv";
-                }
-
-                System.out.println("Writing report to " + filename);
-
-                ColumnHeader header = report.getColumnHeader();
-                List<String> dimensionHeaders = header.getDimensions();
-                List<MetricHeaderEntry> metricHeaders = header.getMetricHeader().getMetricHeaderEntries();
-                List<ReportRow> rows = report.getData().getRows();
-
-                if (rows == null) {
-                    System.out.println("No data found for " + config.viewId);
-                    return;
-                }
-
-
-                //write headers
-                List<String> headers = new ArrayList<>();
-                headers.addAll(dimensionHeaders);
-                headers.addAll(metricHeaders.stream().map(MetricHeaderEntry::getName).toList());
-
-                Path path = Paths.get( filename );
-                BufferedWriter writer = Files.newBufferedWriter(path, StandardCharsets.UTF_8);
-                CSVPrinter csvWriter = new CSVPrinter(writer, CSVFormat.DEFAULT
-                        .withHeader( headers.toArray(new String[0]) ));
-
-
-                //write data
-                for (ReportRow row: rows) {
-                    List<String> dimensions = row.getDimensions();
-                    List<DateRangeValues> metrics = row.getMetrics();
-                    List<String> rowData = new ArrayList<>();
-
-                    for (int i = 0; i < dimensions.size(); i++) {
-                        rowData.add(dimensions.get(i));
-
-                    }
-
-                    for (int j = 0; j < metrics.size(); j++) {
-                        DateRangeValues values = metrics.get(j);
-                        for (int k = 0; k < values.getValues().size(); k++) {
-                            rowData.add(values.getValues().get(k));
-                        }
-                    }
-                    csvWriter.printRecord(rowData);
-                }
-                csvWriter.flush();
-                csvWriter.close();
+            String directoryName = new File(this.configFilename).getParent();
+            if (new File(directoryName + "/csv").exists()) {
+                directoryName = directoryName + "/csv";
             }
+
+            String filename = directoryName + "/" + config.reportName + "-" + fileSuffix + ".csv";
+            //while file exists, increment suffix
+            while(new File(filename).exists()) {
+                fileSuffix++;
+                filename = directoryName + "/" + config.reportName + "-" + fileSuffix + ".csv";
+            }
+            System.out.println("Writing report to " + filename);
+
+            //write headers
+            List<String> headers = new ArrayList<>();
+            config.metrics.forEach(metric -> headers.add(metric));
+            config.dimensions.forEach(dimension -> headers.add(dimension));
+
+            Path path = Paths.get( filename );
+            BufferedWriter writer = Files.newBufferedWriter(path, StandardCharsets.UTF_8);
+            CSVPrinter csvWriter = new CSVPrinter(writer, CSVFormat.DEFAULT
+                    .withHeader( headers.toArray(new String[0]) ));
+
+            for (Row row: response) {
+                List<DimensionValue> dimensions = row.getDimensionValuesList();
+                List<MetricValue> metrics = row.getMetricValuesList();
+                List<String> rowData = new ArrayList<>();
+
+                for (int j = 0; j < metrics.size(); j++) {
+                    MetricValue value = metrics.get(j);
+                    rowData.add(value.getValue());
+                }
+
+                for (int i = 0; i < dimensions.size(); i++) {
+                    DimensionValue value = dimensions.get(i);
+                    rowData.add(value.getValue());
+                }
+
+                csvWriter.printRecord(rowData);
+            }
+            csvWriter.flush();
+            csvWriter.close();
         } catch (IOException e) {
             e.printStackTrace();
         }

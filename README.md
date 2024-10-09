@@ -11,17 +11,13 @@ https://github.com/plausible/analytics/blob/ad12e1ef315c9b4c8eabb20d8cd6a86f3262
 Example usage:
 ---
 
-First you have to set up your Google Analytics credentials.  You can do this by following the 
-instructions here: https://developers.google.com/analytics/devguides/reporting/core/v4/quickstart/service-java
-
-(The above mentioned link is the basis of this app.)
-
+First you have to set up your Google Analytics credentials.  
 Make sure you save the credentials file as `credentials.json` in the root of this project.
 
 Once you have your credentials set up, you can run the app with the following command:
 
 ```
-mvn compile exec:java -Dexec.args="./reports/some-report-config.json"
+GOOGLE_APPLICATION_CREDENTIALS=credentials.json mvn compile exec:java -Dexec.args="./reports/pagePath/index.json"
 ```
 
 The first time you run this app, you may get an error saying that this is the first time using the api and you have to follow
@@ -35,26 +31,27 @@ Example:
 ```
 {
   "applicationName": "Hello Analytics Reporting",
-  "viewId": "4490530",
+  "propertyId": "123456",
+  "viewId": "N/A",
   "reportName": "visitors",
   "metrics": [
-    "ga:users",
-    "ga:sessions",
-    "ga:pageviews",
-    "ga:bounces",
-    "ga:sessionDuration"
+    "users",
   ],
   "dimensions": [
-    "ga:date"
+    "date"
   ],
-  "startDate": "2007-08-01",
+  "startDate": "2020-08-01",
   "endDate": "today",
   "limit": 10000,
   "sort": [
-    "ga:date"
+    "date"
   ]
 }
 ```
 
-The view id can be found in the Google Analytics admin panel.  You can also find it in the URL
+The property id can be found in the Google Analytics admin panel.  You can also find it in the URL
 when you are looking at a report in the Google Analytics UI.
+
+### GA4
+
+Starting with this commit, the code has been changed to work with GA4.  Some of the reports will not work with GA4.

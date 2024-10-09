@@ -53,12 +53,15 @@
             <artifactId>google-api-client-gson</artifactId>
             <version>1.35.2</version>
         </dependency>
-
+        <dependency>
+            <groupId>com.google.analytics</groupId>
+            <artifactId>google-analytics-data</artifactId>
+            <version>0.62.0</version>
+        </dependency>
     </dependencies>
 
     <build>
         <plugins>
-
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>
                     <artifactId>exec-maven-plugin</artifactId>
@@ -74,13 +77,6 @@
                         <mainClass>org.zfin.analytics.AnalyticsReportingApp</mainClass>
                     </configuration>
                 </plugin>
-
-
-
-
         </plugins>
-
     </build>
-
-
 </project>

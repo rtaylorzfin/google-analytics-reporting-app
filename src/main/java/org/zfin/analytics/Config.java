@@ -25,5 +25,5 @@ public class Config {
     public String endDate;
     public Integer limit;
     public List<String> sort;
-    public String nextPageToken;
+    public String propertyId;
 }
