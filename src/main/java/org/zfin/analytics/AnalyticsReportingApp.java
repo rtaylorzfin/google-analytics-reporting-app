@@ -4,12 +4,21 @@ import com.google.analytics.data.v1beta.*;
 import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.http.HttpRequest;
+import com.google.api.client.http.HttpRequestInitializer;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.gson.GsonFactory;
+import com.google.api.gax.core.FixedCredentialsProvider;
+import com.google.api.services.analyticsreporting.v4.AnalyticsReporting;
+import com.google.api.services.analyticsreporting.v4.AnalyticsReportingScopes;
+import com.google.auth.oauth2.GoogleCredentials;
+import com.google.auth.oauth2.ServiceAccountCredentials;
+import com.google.gson.Gson;
+import com.google.gson.stream.JsonReader;
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVPrinter;
 
 import java.io.*;
-import java.lang.reflect.Field;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -17,19 +26,6 @@ import java.nio.file.Paths;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-
-import com.google.api.services.analyticsreporting.v4.AnalyticsReportingScopes;
-import com.google.api.services.analyticsreporting.v4.AnalyticsReporting;
-
-//import com.google.api.services.analyticsreporting.v4.model.*;
-
-import com.google.gson.Gson;
-import com.google.gson.stream.JsonReader;
-
-import com.google.api.client.http.HttpRequestInitializer;
-import org.apache.commons.csv.CSVFormat;
-import org.apache.commons.csv.CSVPrinter;
 
 
 public class AnalyticsReportingApp {
@@ -123,7 +119,21 @@ public class AnalyticsReportingApp {
 
         RunReportRequest request = runReportRequestBuilder.build();
 
-        try(BetaAnalyticsDataClient service = BetaAnalyticsDataClient.create()) {
+        GoogleCredentials gc = null;
+        BetaAnalyticsDataSettings betaAnalyticsDataSettings = null;
+
+        try {
+            String credentialsLocation = System.getenv("GOOGLE_APPLICATION_CREDENTIALS");
+            gc = ServiceAccountCredentials.fromStream(new FileInputStream(credentialsLocation))
+                    .createScoped(AnalyticsReportingScopes.all());
+            betaAnalyticsDataSettings = BetaAnalyticsDataSettings.newBuilder().setCredentialsProvider(FixedCredentialsProvider.create(gc)).build();
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+
+        try(BetaAnalyticsDataClient service = BetaAnalyticsDataClient.create(betaAnalyticsDataSettings)) {
             RunReportResponse response = service.runReport(request);
 
             int totalRows = response.getRowCount();
@@ -165,8 +175,8 @@ public class AnalyticsReportingApp {
 
             //write headers
             List<String> headers = new ArrayList<>();
-            config.metrics.forEach(metric -> headers.add(metric));
-            config.dimensions.forEach(dimension -> headers.add(dimension));
+            headers.addAll(config.metrics);
+            headers.addAll(config.dimensions);
 
             Path path = Paths.get( filename );
             BufferedWriter writer = Files.newBufferedWriter(path, StandardCharsets.UTF_8);
