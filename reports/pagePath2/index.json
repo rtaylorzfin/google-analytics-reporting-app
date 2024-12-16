@@ -1,0 +1,22 @@
+{
+  "applicationName": "Hello Analytics Reporting",
+  "propertyId": "351335549",
+  "viewId": "N/A",
+  "reportName": "pagePath2",
+  "dimensions": [
+    "year",
+    "month",
+    "pagePath"
+  ],
+  "metrics": [
+    "totalUsers"
+  ],
+  "startDate": "2023-03-01",
+  "endDate": "2023-03-02",
+  "limit": 100000,
+  "sort": [
+    "year",
+    "month"
+  ],
+  "nextPageToken": null
+}

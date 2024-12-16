@@ -1,18 +1,16 @@
 {
   "applicationName": "Hello Analytics Reporting",
-  "viewId": "4490530",
+  "viewId": "N/A",
+  "propertyId": "351335549",
   "reportName": "sources",
   "dimensions": [
-    "ga:date",
-    "ga:source",
-    "ga:medium",
-    "ga:campaign",
-    "ga:adContent",
-    "ga:keyword"
+    "date",
+    "source",
+    "medium"
   ],
-  "metrics": ["ga:users", "ga:sessions", "ga:bounces", "ga:sessionDuration"],
-  "startDate": "2007-08-01",
+  "metrics": ["totalUsers", "sessions", "bounceRate"],
+  "startDate": "2015-08-15",
   "endDate": "today",
   "limit": 100000,
-  "sort": [ "ga:date" ]
+  "sort": [ "date" ]
 }

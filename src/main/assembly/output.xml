@@ -1,0 +1,28 @@
+<assembly xmlns="http://maven.apache.org/ASSEMBLY/2.1.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/ASSEMBLY/2.1.0 http://maven.apache.org/xsd/assembly-2.1.0.xsd">
+    <id>output</id>
+    <formats>
+        <format>dir</format> <!-- Creates a directory -->
+    </formats>
+    <baseDirectory>output</baseDirectory> <!-- Root directory of the assembly -->
+
+    <dependencySets>
+        <dependencySet>
+            <outputDirectory>lib</outputDirectory> <!-- Directory for dependencies -->
+            <unpack>false</unpack>
+            <scope>runtime</scope> <!-- Include runtime dependencies -->
+        </dependencySet>
+    </dependencySets>
+
+    <fileSets>
+        <fileSet>
+            <directory>${project.build.directory}</directory>
+            <outputDirectory>.</outputDirectory> <!-- Place your compiled JAR in the root -->
+            <includes>
+                <include>${project.build.finalName}.jar</include>
+            </includes>
+        </fileSet>
+    </fileSets>
+</assembly>
+
