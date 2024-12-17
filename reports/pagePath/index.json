@@ -1,7 +1,6 @@
 {
   "applicationName": "Hello Analytics Reporting",
   "propertyId": "351335549",
-  "viewId": "N/A",
   "reportName": "pagePath",
   "dimensions": [
     "year",
@@ -17,6 +16,5 @@
   "sort": [
     "year",
     "month"
-  ],
-  "nextPageToken": null
+  ]
 }

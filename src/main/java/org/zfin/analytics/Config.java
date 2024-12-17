@@ -17,7 +17,6 @@ import java.util.List;
  */
 public class Config {
     public String applicationName;
-    public String viewId;
     public String reportName;
     public List<String> metrics;
     public List<String> dimensions;

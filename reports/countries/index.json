@@ -1,20 +1,21 @@
 {
   "applicationName": "Hello Analytics Reporting",
   "propertyId": "351335549",
-  "reportName": "pagePath2",
+  "reportName": "countries",
   "dimensions": [
-    "year",
-    "month",
-    "pagePath"
+    "country"
   ],
   "metrics": [
-    "totalUsers"
+    "activeUsers",
+    "newUsers",
+    "totalUsers",
+    "sessions",
+    "screenPageViews"
   ],
   "startDate": "2023-03-01",
-  "endDate": "2023-03-02",
+  "endDate": "today",
   "limit": 100000,
   "sort": [
-    "year",
-    "month"
+    "screenPageViews"
   ]
 }

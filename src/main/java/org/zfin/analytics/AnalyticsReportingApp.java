@@ -142,7 +142,9 @@ public class AnalyticsReportingApp {
             System.out.println("Total rows: " + totalRows);
             System.out.println("Rows in response: " + rowsInResponse);
 
-            int pageCount = 0;
+            int pageCount = 1;
+            System.out.println("Getting page " + pageCount + " for " + config.reportName);
+            writeResponseToCsvFile(response.getRowsList());
             while (rowsInResponse < totalRows) {
                 request = runReportRequestBuilder.setOffset(rowsInResponse).build();
                 response = service.runReport(request);
