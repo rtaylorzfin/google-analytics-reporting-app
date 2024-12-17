@@ -2,10 +2,10 @@ Analytics Reporting App
 ======================
 
 Use this app to generate reports from Google Analytics.  Some of the reports
-can be used as a basic export functionality.  For example, you can get similar 
-data to what you would get from the Google Analytics Import feature of Plausible Analytics
-by running reports based on these configurations:
+can be used as a basic export functionality.  The reports in this app were originally
+intended to be used for import into a Plausible Analytics instance.  
 
+Examples of reports that are used by the plausible project:
 https://github.com/plausible/analytics/blob/ad12e1ef315c9b4c8eabb20d8cd6a86f3262fc97/lib/plausible/google/report_request.ex#L24
 
 Example usage:
