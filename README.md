@@ -32,7 +32,6 @@ Example:
 {
   "applicationName": "Hello Analytics Reporting",
   "propertyId": "123456",
-  "viewId": "N/A",
   "reportName": "visitors",
   "metrics": [
     "users",
@@ -51,6 +50,12 @@ Example:
 
 The property id can be found in the Google Analytics admin panel.  You can also find it in the URL
 when you are looking at a report in the Google Analytics UI.
+
+### Metrics and Dimensions
+
+The metrics and dimensions are the same as what you would use in the Google Analytics UI.  You can find
+documentation here:
+https://developers.google.com/analytics/devguides/reporting/data/v1/api-schema
 
 ### GA4
 
