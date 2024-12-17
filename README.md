@@ -11,7 +11,7 @@ https://github.com/plausible/analytics/blob/ad12e1ef315c9b4c8eabb20d8cd6a86f3262
 Example usage:
 ---
 
-First you have to set up your Google Analytics credentials.  
+First you have to set up your Google Analytics credentials (https://developers.google.com/analytics/devguides/reporting/data/v1/quickstart-client-libraries).  
 Make sure you save the credentials file as `credentials.json` in the root of this project.
 
 Once you have your credentials set up, you can run the app with the following command:
@@ -54,4 +54,5 @@ when you are looking at a report in the Google Analytics UI.
 
 ### GA4
 
-Starting with this commit, the code has been changed to work with GA4.  Some of the reports will not work with GA4.
+This code has been changed to work with GA4.  The earlier version of this code was for Universal Analytics and is tagged as `universal-analytics`.  
+There may be more examples to draw from in the `universal-analytics` branch.  They would just need to be converted slightly to work with GA4.
