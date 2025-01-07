@@ -4,7 +4,7 @@
 
     <groupId>org.zfin.analytics</groupId>
     <artifactId>AnalyticsReportingApp</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0.0</version>
     <packaging>jar</packaging>
 
     <name>Analytics Reporting App</name>
@@ -77,6 +77,37 @@
                     <mainClass>org.zfin.analytics.AnalyticsReportingApp</mainClass>
                 </configuration>
             </plugin>
+
+            <!-- Maven Shade Plugin -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>3.5.0</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <createDependencyReducedPom>true</createDependencyReducedPom>
+                            <relocations>
+                                <!-- Relocate dependencies to avoid conflicts -->
+                                <relocation>
+                                    <pattern>com.google</pattern>
+                                    <shadedPattern>org.zfin.shaded.com.google</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>org.apache.commons</pattern>
+                                    <shadedPattern>org.zfin.shaded.org.apache.commons</shadedPattern>
+                                </relocation>
+                            </relocations>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+
 
 <!-- Uncomment below to use maven-assembly-plugin to create an output directory that includes all runtime dependencies -->
 <!-- configuration in src/main/assembly/output.xml -->
