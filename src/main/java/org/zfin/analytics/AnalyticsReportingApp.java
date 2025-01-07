@@ -40,7 +40,8 @@ public class AnalyticsReportingApp {
         try {
             initialize();
             analyticsReportRunner = new AnalyticsReportRunner(config, credentials);
-            List<Path> outputFiles = analyticsReportRunner.runReportAndWriteCsvFiles(outputDirectory);
+            List<Path> outputFiles =
+                    analyticsReportRunner.runReportAndWriteCsvFiles(outputDirectory);
             System.out.println("Output files written to: " + outputDirectory);
             outputFiles.forEach(System.out::println);
         } catch (Exception e) {
@@ -71,21 +72,23 @@ public class AnalyticsReportingApp {
         }
     }
 
-    private static HttpRequestInitializer setHttpTimeout(final HttpRequestInitializer requestInitializer) {
+    private static HttpRequestInitializer setHttpTimeout(
+            final HttpRequestInitializer requestInitializer) {
         return new HttpRequestInitializer() {
             @Override
             public void initialize(HttpRequest httpRequest) throws IOException {
                 requestInitializer.initialize(httpRequest);
-                httpRequest.setConnectTimeout(3 * 60000);  // 3 minutes connect timeout
-                httpRequest.setReadTimeout(3 * 60000);  // 3 minutes read timeout
-            }};
+                httpRequest.setConnectTimeout(3 * 60000); // 3 minutes connect timeout
+                httpRequest.setReadTimeout(3 * 60000); // 3 minutes read timeout
+            }
+        };
     }
 
     private void loadConfigJson() throws Exception {
-        //filename of the config json file
+        // filename of the config json file
         String filename = configFilename;
 
-        //read the config json file with gson
+        // read the config json file with gson
         try {
             JsonReader reader = new JsonReader(new FileReader(filename));
             Gson gson = new Gson();
@@ -95,5 +98,4 @@ public class AnalyticsReportingApp {
             throw new Exception("Config file not found");
         }
     }
-
 }

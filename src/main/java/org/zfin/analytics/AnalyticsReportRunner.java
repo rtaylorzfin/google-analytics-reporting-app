@@ -35,7 +35,8 @@ public class AnalyticsReportRunner {
         runReportRequestBuilder.setProperty("properties/" + config.propertyId);
 
         // DateRange
-        runReportRequestBuilder.addDateRanges(DateRange.newBuilder().setStartDate(config.startDate).setEndDate(config.endDate));
+        runReportRequestBuilder.addDateRanges(
+                DateRange.newBuilder().setStartDate(config.startDate).setEndDate(config.endDate));
 
         // Configure Metrics
         config.metrics.forEach(metricName -> {
@@ -49,13 +50,12 @@ public class AnalyticsReportRunner {
 
         // Configure the sort order
         config.sort.forEach(orderFieldName -> {
-            runReportRequestBuilder.addOrderBys(
-                    OrderBy.newBuilder().setDimension(
-                                    OrderBy.DimensionOrderBy.newBuilder().setDimensionName(orderFieldName)
-                            )
-//  TODO: add handling of descending sort order
-//                    .setDesc(true)
-                            .build());
+            runReportRequestBuilder.addOrderBys(OrderBy.newBuilder()
+                    .setDimension(
+                            OrderBy.DimensionOrderBy.newBuilder().setDimensionName(orderFieldName))
+                    //  TODO: add handling of descending sort order
+                    //                    .setDesc(true)
+                    .build());
         });
 
         runReportRequestBuilder.setLimit(config.limit);
@@ -66,33 +66,40 @@ public class AnalyticsReportRunner {
         BetaAnalyticsDataSettings betaAnalyticsDataSettings = null;
 
         try {
-            InputStream inputStream = new ByteArrayInputStream(credentials.getBytes(StandardCharsets.UTF_8));
-            gc = ServiceAccountCredentials.fromStream(inputStream).createScoped(AnalyticsReportingScopes.all());
-            betaAnalyticsDataSettings = BetaAnalyticsDataSettings.newBuilder().setCredentialsProvider(FixedCredentialsProvider.create(gc)).build();
+            InputStream inputStream =
+                    new ByteArrayInputStream(credentials.getBytes(StandardCharsets.UTF_8));
+            gc = ServiceAccountCredentials.fromStream(inputStream)
+                    .createScoped(AnalyticsReportingScopes.all());
+            betaAnalyticsDataSettings = BetaAnalyticsDataSettings.newBuilder()
+                    .setCredentialsProvider(FixedCredentialsProvider.create(gc))
+                    .build();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
 
         List<Path> outputFiles = new ArrayList<>();
 
-        try(BetaAnalyticsDataClient service = BetaAnalyticsDataClient.create(betaAnalyticsDataSettings)) {
+        try (BetaAnalyticsDataClient service =
+                BetaAnalyticsDataClient.create(betaAnalyticsDataSettings)) {
             RunReportResponse response = service.runReport(request);
 
             int totalRows = response.getRowCount();
             int rowsInResponse = response.getRowsCount();
 
-//            System.out.println("Total rows: " + totalRows);
-//            System.out.println("Rows in response: " + rowsInResponse);
+            //            System.out.println("Total rows: " + totalRows);
+            //            System.out.println("Rows in response: " + rowsInResponse);
 
             int pageCount = 1;
-//            System.out.println("Getting page " + pageCount + " for " + config.reportName);
+            //            System.out.println("Getting page " + pageCount + " for " +
+            // config.reportName);
             outputFiles.add(writeResponseToCsvFile(response.getRowsList(), outputDirectory));
             while (rowsInResponse < totalRows) {
                 request = runReportRequestBuilder.setOffset(rowsInResponse).build();
                 response = service.runReport(request);
                 rowsInResponse += response.getRowsCount();
                 pageCount++;
-//                System.out.println("Getting page " + pageCount + " for " + config.reportName);
+                //                System.out.println("Getting page " + pageCount + " for " +
+                // config.reportName);
                 outputFiles.add(writeResponseToCsvFile(response.getRowsList(), outputDirectory));
             }
             return outputFiles;
@@ -102,9 +109,8 @@ public class AnalyticsReportRunner {
         return null;
     }
 
-
     private Path writeResponseToCsvFile(List<Row> response, Path outputDirectory) {
-        //write analytics reports to csv files
+        // write analytics reports to csv files
         try {
             int fileSuffix = 0;
 
@@ -112,23 +118,23 @@ public class AnalyticsReportRunner {
             String directoryName = fileFromPath.getAbsolutePath();
 
             String filename = directoryName + "/" + config.reportName + "-" + fileSuffix + ".csv";
-            //while file exists, increment suffix
-            while(new File(filename).exists()) {
+            // while file exists, increment suffix
+            while (new File(filename).exists()) {
                 fileSuffix++;
                 filename = directoryName + "/" + config.reportName + "-" + fileSuffix + ".csv";
             }
 
-            //write headers
+            // write headers
             List<String> headers = new ArrayList<>();
             headers.addAll(config.metrics);
             headers.addAll(config.dimensions);
 
-            Path path = Paths.get( filename );
+            Path path = Paths.get(filename);
             BufferedWriter writer = Files.newBufferedWriter(path, StandardCharsets.UTF_8);
-            CSVPrinter csvWriter = new CSVPrinter(writer, CSVFormat.DEFAULT
-                    .withHeader( headers.toArray(new String[0]) ));
+            CSVPrinter csvWriter = new CSVPrinter(
+                    writer, CSVFormat.DEFAULT.withHeader(headers.toArray(new String[0])));
 
-            for (Row row: response) {
+            for (Row row : response) {
                 List<DimensionValue> dimensions = row.getDimensionValuesList();
                 List<MetricValue> metrics = row.getMetricValuesList();
                 List<String> rowData = new ArrayList<>();
@@ -154,5 +160,4 @@ public class AnalyticsReportRunner {
         }
         return null;
     }
-
 }
