@@ -91,8 +91,10 @@
                         </goals>
                         <configuration>
                             <createDependencyReducedPom>true</createDependencyReducedPom>
+
+                            <!-- Relocate dependencies to avoid conflicts -->
+                            <!--
                             <relocations>
-                                <!-- Relocate dependencies to avoid conflicts -->
                                 <relocation>
                                     <pattern>com.google</pattern>
                                     <shadedPattern>org.zfin.shaded.com.google</shadedPattern>
@@ -102,6 +104,16 @@
                                     <shadedPattern>org.zfin.shaded.org.apache.commons</shadedPattern>
                                 </relocation>
                             </relocations>
+                            -->
+
+                           <!-- Exclude some dependencies? -->
+                           <!--
+                           <artifactSet>
+                              <excludes>
+                                 <exclude>org.apache.commons.logging</exclude>
+                               </excludes>
+                           </artifactSet>
+                           -->
                             <filters>
                                 <filter>
                                     <artifact>*:*</artifact>
