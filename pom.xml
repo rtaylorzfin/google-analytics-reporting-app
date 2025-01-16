@@ -4,7 +4,7 @@
 
     <groupId>org.zfin.analytics</groupId>
     <artifactId>AnalyticsReportingApp</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1</version>
     <packaging>jar</packaging>
 
     <name>Analytics Reporting App</name>
@@ -39,6 +39,11 @@
 
         <!-- https://mvnrepository.com/artifact/com.google.apis/google-api-services-analyticsreporting -->
         <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-core</artifactId>
+            <version>2.13.0</version>
+        </dependency>
+        <dependency>
             <groupId>com.google.apis</groupId>
             <artifactId>google-api-services-analyticsreporting</artifactId>
             <version>v4-rev174-1.25.0</version>
@@ -58,6 +63,7 @@
             <artifactId>google-analytics-data</artifactId>
             <version>0.62.0</version>
         </dependency>
+
     </dependencies>
 
     <build>
