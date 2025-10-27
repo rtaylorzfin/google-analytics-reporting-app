@@ -4,7 +4,7 @@
 
     <groupId>org.zfin.analytics</groupId>
     <artifactId>AnalyticsReportingApp</artifactId>
-    <version>1.0.2</version>
+    <version>1.0.3</version>
     <packaging>jar</packaging>
 
     <name>Analytics Reporting App</name>
@@ -98,28 +98,16 @@
                         <configuration>
                             <createDependencyReducedPom>true</createDependencyReducedPom>
 
-                            <!-- Relocate dependencies to avoid conflicts -->
-                            <!--
-                            <relocations>
-                                <relocation>
-                                    <pattern>com.google</pattern>
-                                    <shadedPattern>org.zfin.shaded.com.google</shadedPattern>
-                                </relocation>
-                                <relocation>
-                                    <pattern>org.apache.commons</pattern>
-                                    <shadedPattern>org.zfin.shaded.org.apache.commons</shadedPattern>
-                                </relocation>
-                            </relocations>
-                            -->
+                            <!-- Exclude all dependencies to create a thin JAR -->
+                            <artifactSet>
+                                <excludes>
+                                    <exclude>*:*</exclude>
+                                </excludes>
+                                <includes>
+                                    <include>org.zfin.analytics:AnalyticsReportingApp</include>
+                                </includes>
+                            </artifactSet>
 
-                           <!-- Exclude some dependencies? -->
-                           <!--
-                           <artifactSet>
-                              <excludes>
-                                 <exclude>org.apache.commons.logging</exclude>
-                               </excludes>
-                           </artifactSet>
-                           -->
                             <filters>
                                 <filter>
                                     <artifact>*:*</artifact>
