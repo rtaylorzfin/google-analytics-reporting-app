@@ -4,7 +4,7 @@
 
     <groupId>org.zfin.analytics</groupId>
     <artifactId>AnalyticsReportingApp</artifactId>
-    <version>1.0.3</version>
+    <version>1.0.4</version>
     <packaging>jar</packaging>
 
     <name>Analytics Reporting App</name>
@@ -83,47 +83,6 @@
                     <mainClass>org.zfin.analytics.AnalyticsReportingApp</mainClass>
                 </configuration>
             </plugin>
-
-            <!-- Maven Shade Plugin -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-shade-plugin</artifactId>
-                <version>3.5.0</version>
-                <executions>
-                    <execution>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>shade</goal>
-                        </goals>
-                        <configuration>
-                            <createDependencyReducedPom>true</createDependencyReducedPom>
-
-                            <!-- Exclude all dependencies to create a thin JAR -->
-                            <artifactSet>
-                                <excludes>
-                                    <exclude>*:*</exclude>
-                                </excludes>
-                                <includes>
-                                    <include>org.zfin.analytics:AnalyticsReportingApp</include>
-                                </includes>
-                            </artifactSet>
-
-                            <filters>
-                                <filter>
-                                    <artifact>*:*</artifact>
-                                    <excludes>
-                                        <exclude>META-INF/*.SF</exclude>
-                                        <exclude>META-INF/*.DSA</exclude>
-                                        <exclude>META-INF/*.RSA</exclude>
-                                    </excludes>
-                                </filter>
-                            </filters>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-
-
 
 <!-- Uncomment below to use maven-assembly-plugin to create an output directory that includes all runtime dependencies -->
 <!-- configuration in src/main/assembly/output.xml -->
